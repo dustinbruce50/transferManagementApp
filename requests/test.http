@@ -1,0 +1,17 @@
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "admin"
+}
+
+
+POST http://localhost:3000/transfers/requested
+Content-Type: application/json
+
+{
+    "userId": "1",
+    "item": "item1",
+    "amountReq": 2
+}
