@@ -74,6 +74,7 @@ const OperatorOpenTransfers = () => {
     try {
       const id = selectedTransfer?._id;
       const token = await AsyncStorage.getItem('token');
+      const unitNum = await AsyncStorage.getItem('unitNum');
       const response = await axios.put(
         `http://10.0.2.2:3000/transfers/${id}`,
         {
@@ -81,6 +82,8 @@ const OperatorOpenTransfers = () => {
           status: 'accepted',
           amountSent: amountSent,
           amountSentType: countTypeSent,
+          sendingUnit: unitNum,
+          
         },
         {
           headers: {

@@ -9,16 +9,21 @@ const RequestTransfer = () => {
   const [item, setItem] = useState('');
   const [amountReq, setAmountReq] = useState('');
   const [amountReqType, setAmountReqType] = useState('EA');
+  
+  
+  
 
   const handleSubmit = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
+      const unitNum = await AsyncStorage.getItem('unitNum');
       const response = await axios.post(
         'http://10.0.2.2:3000/transfers/requested',
         {
           item,
           amountReq,
           amountReqType,
+          unitNum,
         },
         {
           headers: {

@@ -6,6 +6,11 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     //required: true,
   },
+  unitNum: {
+    type: String,
+    required: true,
+    unique: false,
+  },
   name: {
     type: String,
     required: true,

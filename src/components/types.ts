@@ -32,6 +32,8 @@ export interface Transfer {
   amountReqType: string;
   amountSent: number;
   amountSentType: string;
+  receivingUnit: string;
+  sendingUnit: string;
   type: string;
   date: string;
 }

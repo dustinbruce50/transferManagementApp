@@ -58,7 +58,7 @@ app.post('/login', async (req, res) => {
     const token = jwt.sign({id: user.id}, 'secret', {expiresIn: 86400});
     res
       .status(200)
-      .send({auth: true, token, userType: user.userType, id: user.userId});
+      .send({auth: true, token, userType: user.userType, id: user.userId, unitNum: user.unitNum});
   } catch (err) {
     console.log(err);
     res.status(500).send('Error on the server');
@@ -66,8 +66,10 @@ app.post('/login', async (req, res) => {
 });
 app.post('/register', async (req, res) => {
   console.log('Registering new user');
-  const {username, password, userType, email} = req.body;
+  const {username, unitNum, password, userType, email} = req.body;
+  //userType = 'admin';
   console.log('username: ', username);
+  console.log('unitNum: ', unitNum);
   console.log('password: ', password);
   console.log('userType: ', userType);
   console.log('email: ', email);
@@ -77,6 +79,7 @@ app.post('/register', async (req, res) => {
     console.log('trying to create user');
     const user = new User({
       name: username,
+      unitNum: unitNum,
       password: hashedPassword,
       usertype: userType.toString(),
       email: email.toString(),
@@ -95,6 +98,7 @@ app.post('/register', async (req, res) => {
 //Transfer Routes
 app.post('/transfers/requested', verifyToken, async (req, res) => {
   console.log('created new transfers');
+  console.log('Request body: ', req.body);
   try {
     const transfer = new Transfer({
       userId: req.userId,
@@ -102,6 +106,7 @@ app.post('/transfers/requested', verifyToken, async (req, res) => {
       //cost: req.body.cost,
       amountReq: req.body.amountReq,
       amountReqType: req.body.amountReqType,
+      receivingUnit: req.body.unitNum,
       //amountSent: req.body.amountSent,
       type: 'requested',
     });
@@ -112,30 +117,17 @@ app.post('/transfers/requested', verifyToken, async (req, res) => {
     res.status(400).send(err);
   }
 });
-app.get('/transfers/requested', async (req, res) => {
-  console.log('Fetching requested transfers');
-  try {
-    const transfers = await Transfer.find({type: 'requested'});
-    res.status(200).send(transfers);
-  } catch (err) {
-    console.log(err);
-    res.status(400).send(err);
+app.get('/transfers/:status', async (req, res) => {
+  const { status } = req.params;
+  console.log(`Fetching ${status} transfers`);
+  
+  // Validate the status parameter
+  const validStatuses = ['requested', 'accepted', 'in-transit', 'delivered'];
+  if (!validStatuses.includes(status)) {
+    return res.status(400).send('Invalid status. Must be one of: requested, accepted, delivered');
   }
-});
-app.get('/transfers/accepted', async (req, res) => {
-  console.log('Fetching accepted transfers');
   try {
-    const transfers = await Transfer.find({type: 'accepted'});
-    res.status(200).send(transfers);
-  } catch (err) {
-    console.log(err);
-    res.status(400).send(err);
-  }
-});
-app.get('/transfers/delivered', async (req, res) => {
-  console.log('Fetching delievered transfers');
-  try {
-    const transfers = await Transfer.find({type: 'delivered'});
+    const transfers = await Transfer.find({type: status});
     res.status(200).send(transfers);
   } catch (err) {
     console.log(err);
@@ -145,7 +137,7 @@ app.get('/transfers/delivered', async (req, res) => {
 app.put('/transfers/:id', verifyToken, async (req, res) => {
   console.log('Updating transfer');
   const {id} = req.params;
-  const {amountSent, status, amountSentType} = req.body;
+  const {amountSent, status, amountSentType, sendingUnit} = req.body;
 
   try {
     const transfer = await Transfer.findById(id);
@@ -154,15 +146,21 @@ app.put('/transfers/:id', verifyToken, async (req, res) => {
     }
     if(status != null){
       transfer.type = status;
+      console.log('Status updated to: ', status);
     }
     if(amountSent != null){
       transfer.amountSent = amountSent;
+      console.log('Amount sent updated to: ', amountSent);
     }
     if(amountSentType != null){
       transfer.amountSentType = amountSentType.toString();
+      console.log('Amount sent type updated to: ', amountSentType);
+    }
+    if(sendingUnit != null){
+      transfer.sendingUnit = sendingUnit;
+      console.log('Sending unit updated to: ', sendingUnit);
     }
     await transfer.save();
-
     res.status(200).send('Transfer updated successfully');
   } catch (error) {
     console.log(error);

@@ -11,6 +11,8 @@ interface Transfer {
   amountSentType: string;
   type: string;
   date: string;
+  receivingUnit: string;
+  sendingUnit: string;
 }
 
 interface TransferCardProps {
@@ -27,6 +29,8 @@ const TransferCard: React.FC<TransferCardProps> = ({
   return (
     <View style={styles.card}>
       <Text>Item: {item.item}</Text>
+      <Text>Requesting Unit: {item.receivingUnit}</Text>
+      <Text>Sending Unit: {item.sendingUnit}</Text>
       <Text>
         Amount Requested: {item.amountReq} {item.amountReqType}
       </Text>

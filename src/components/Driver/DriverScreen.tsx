@@ -44,7 +44,7 @@ const DriverScreen = () => {
     <View>
       <TransferCard
         item={item}
-        buttonTitle="Mark Delivered"
+        buttonTitle="Mark as In Transit"
         onPressButton={() => handleSubmit(item._id)}
       />
     </View>
@@ -57,7 +57,7 @@ const DriverScreen = () => {
         `http://10.0.2.2:3000/transfers/${id}`,
         {
           id,
-          status: 'delivered',
+          status: 'in-transit',
         },
         {
           headers: {
@@ -65,10 +65,10 @@ const DriverScreen = () => {
           },
         },
       );
-      Alert.alert('Transfer Delivered');
+      Alert.alert('Transfer Marked as In Transit');
     } catch (error) {
       console.log(error);
-      Alert.alert('Error Posting Delivered Transfer');
+      Alert.alert('Error Posting In Transit Transfer');
     }
     fetchTransfers();
   };

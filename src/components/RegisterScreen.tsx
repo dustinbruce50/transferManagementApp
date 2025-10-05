@@ -22,6 +22,7 @@ type Props = {
 
 const RegisterScreen = ({navigation}: Props) => {
   const [username, setUsername] = useState('');
+  const [unitNum, setUnitNum] = useState('');
   const [password, setPassword] = useState('');
   const [userType, setUserType] = useState('operator');
   const [email, setEmail] = useState('');
@@ -32,6 +33,7 @@ const RegisterScreen = ({navigation}: Props) => {
     try {
       const response = await axios.post('http://10.0.2.2:3000/register', {
         username,
+        unitNum,
         password,
         userType,
         email,
@@ -76,7 +78,13 @@ const RegisterScreen = ({navigation}: Props) => {
               onChangeText={setUsername}
               onChange={() => setUsername}
             />
-
+            <TextInput
+              style={styles.input}
+              placeholder="Unit Number"
+              value={unitNum}
+              onChangeText={setUnitNum}
+              onChange={() => setUnitNum}
+            />
             <TextInput
               style={styles.input}
               placeholder="Password"

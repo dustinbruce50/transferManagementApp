@@ -8,7 +8,7 @@ const TransferSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['requested', 'accepted', 'delivered'],
+    enum: ['requested', 'accepted', 'in-transit', 'delivered'],
     required: true,
     default: 'requested',
   },
@@ -33,8 +33,16 @@ const TransferSchema = new mongoose.Schema({
   },
   date: {
     type: Date,
-    //default: Date.now,
+    default: Date.now,
   },
+  sendingUnit: {
+    type: String,
+    default: 'Not Assigned',
+  },
+  receivingUnit: {
+    type: String,
+    default: 'Not Assigned',
+  }
 });
 
 module.exports = mongoose.model('Transfer', TransferSchema);

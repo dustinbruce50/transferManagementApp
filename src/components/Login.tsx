@@ -26,6 +26,7 @@ const Login = ({navigation}: Props) => {
   const isMounted = useRef(true);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [unitNum, setUnitNum] = useState('');
 
   useEffect(() => {
     return () => {
@@ -43,13 +44,17 @@ const Login = ({navigation}: Props) => {
         password,
       });
       console.log('Response: ', response);
-      const {token, userType, id} = response.data;
+      const {token, userType, id, unitNum} = response.data;
       await AsyncStorage.setItem('token', token);
       await AsyncStorage.setItem('userType', userType);
       await AsyncStorage.setItem('username', username);
       await AsyncStorage.setItem('userId', id.toString());
+      await AsyncStorage.setItem('unitNum', unitNum);
       console.log('Token: ', token);
       console.log('UserType: ', userType);
+      console.log('User name: ', username);
+      console.log('ID: ', id);
+      console.log('UnitNum: ', unitNum);
       if (response.status === 200) {
         console.log('You have successfully logged in');
 
