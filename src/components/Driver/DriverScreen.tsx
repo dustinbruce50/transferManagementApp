@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import TransferCard from '../TransferCard';
 import {Transfer} from "../types"
+import { useFocusEffect } from '@react-navigation/native';
 
 
 
@@ -36,10 +37,16 @@ const DriverScreen = () => {
       Alert.alert('Error fetching transfers');
     }
   };
+  /** 
   useEffect(() => {
     fetchTransfers();
   }, []);
-
+  */
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchTransfers();
+    }, [])
+  );
   const renderItem = ({item}: {item: Transfer}) => (
     <View>
       <TransferCard

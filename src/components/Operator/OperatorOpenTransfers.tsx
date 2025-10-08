@@ -1,26 +1,42 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Alert,
   Button,
   FlatList,
-  Modal,
+  InteractionManager,
+  //Modal,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
+import RNModal from 'react-native-modal';
 import {Transfer} from "../types"
 import TransferCard from '../TransferCard';
 import {Picker} from '@react-native-picker/picker';
+import { useFocusEffect } from '@react-navigation/native';
 
 const OperatorOpenTransfers = () => {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
-  const [amountSent, setAmountSent] = useState<Number>();
-  const [countTypeSent, setCountTypeSent] = useState();
-  const [selectedTransfer, setSelectedTransfer] = useState<Transfer | null>();
+  const [amountSent, setAmountSent] = useState<string>('');
+  const [countTypeSent, setCountTypeSent] = useState<string>('EA');
+  const [selectedTransfer, setSelectedTransfer] = useState<Transfer | null>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const isMounted = useRef<boolean>(true);
+  
+  const fetchAbort = useRef<AbortController | null>(null);
+  
+  
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+  
+  
 
   const renderItem = ({item}: {item: Transfer}) => (
     <View>
@@ -34,16 +50,20 @@ const OperatorOpenTransfers = () => {
 
   const openModal = (transfer: Transfer) => {
     setSelectedTransfer(transfer);
+    setAmountSent(transfer.amountReq?.toString() || '0'); // Use requested amount as default
+    setCountTypeSent(transfer.amountReqType || 'EA'); // Use requested type as default
     setModalVisible(true);
   };
   const closeModal = () => {
-    setSelectedTransfer(null);
+
     setModalVisible(false);
   };
 
-  useEffect(() => {
-    fetchTransfers();
-  }, []);
+  useFocusEffect(
+      React.useCallback(() => {
+        fetchTransfers();
+      }, [])
+    );
   const fetchTransfers = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
@@ -51,23 +71,28 @@ const OperatorOpenTransfers = () => {
         'http://10.0.2.2:3000/transfers/requested',
         {
           headers: {
-            'x-auth-token': token,
+            'x-access-token': token,
           },
         },
       );
-      setTransfers(response.data);
+      if (isMounted.current) {
+        setTransfers(response.data);
+      }
     } catch (error) {
       console.log(error);
       Alert.alert('Error fetching transfers');
     }
   };
 
+
+
   const onAccept = async () => {
-    if (amountSent == null || amountSent == 0) {
+    //if (amountSent == null || amountSent == 0) {
+    if (!amountSent || parseFloat(amountSent) <= 0 || isNaN(parseFloat(amountSent))) {
       Alert.alert('Please enter an amount to send');
       return;
     }
-    if (countTypeSent == null) {
+    if (!countTypeSent) {
       Alert.alert('Please select a count type');
       return;
     }
@@ -80,7 +105,7 @@ const OperatorOpenTransfers = () => {
         {
           id,
           status: 'accepted',
-          amountSent: amountSent,
+          amountSent: parseFloat(amountSent),
           amountSentType: countTypeSent,
           sendingUnit: unitNum,
           
@@ -91,7 +116,15 @@ const OperatorOpenTransfers = () => {
           },
         },
       );
-      Alert.alert('Transfer Accepted');
+      //Alert.alert('Transfer Accepted');
+      console.warn("crash test 1")
+      
+      console.warn("🟢 CRASH TEST 3");
+     //await fetchTransfers();
+      closeModal();
+     
+      console.warn("crash test 2")
+      console.warn("crash test 3")
     } catch (error) {
       console.log(error);
       Alert.alert('Error Accepting Transfer');
@@ -99,48 +132,58 @@ const OperatorOpenTransfers = () => {
   };
 
   return (
-    <View>
+    <View style={{flex:1}}>
       <Text>Open Requests</Text>
       <FlatList
         data={transfers}
         renderItem={renderItem}
         keyExtractor={(item: Transfer) => item._id}
       />
-      <View
-        style={{
-          backgroundColor: 'rgba(0,0,0,.5)',
-        }}>
-        <Modal
-          animationType="slide"
-          visible={modalVisible}
-          onRequestClose={closeModal}
-          style={styles.modal}
-          transparent={true}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalContent2}>
-              <TextInput
-                style={styles.inputModal}
-                placeholder="Amount to send"
-                keyboardType="numeric"
-                onChangeText={text => setAmountSent(parseFloat(text))}
-              />
-              <Picker
-                mode="dropdown"
-                selectedValue={countTypeSent}
-                onValueChange={itemValue => setCountTypeSent(itemValue)}
-                style={{height: 50, width: 90}}
-                prompt="CS/Ea...">
-                <Picker.Item label="Ea" value="EA" />
-                <Picker.Item label="CS" value="CS" />
-                <Picker.Item label="LB" value="Lb" />
-              </Picker>
-              <Button title="Accept Transfer" onPress={onAccept} />
-            </View>
-          </View>
-        </Modal>
+      
+      <RNModal
+        isVisible={modalVisible}
+        onBackdropPress={closeModal}
+        //animation=""
+        animationInTiming={100}
+        animationOutTiming={100}
+        //avoidKeyboard={true}
+        hasBackdrop={true}
+        backdropColor="black"
+        backdropOpacity={0.7}
+        backdropTransitionInTiming={1000}
+        backdropTransitionOutTiming={1000}
+        onBackButtonPress={closeModal}
+        onModalHide={fetchTransfers}
+        
+      >
+      <View style={styles.modalContent}>
+        <View style={styles.modalContent2}>
+        <Text>Accept Transfer</Text>
+        <TextInput
+          style={styles.input2}
+          placeholder="Amount Sent"
+          keyboardType="numeric"
+          value={amountSent}
+          onChangeText={setAmountSent}
+        />
+        <Picker
+          selectedValue={countTypeSent}
+          onValueChange={setCountTypeSent}
+          prompt="Select type"
+        >
+          <Picker.Item label="Ea" value="EA" />
+          <Picker.Item label="CS" value="CS" />
+          <Picker.Item label="Lb" value="LB" />
+        </Picker>
+        <Button title="Accept" onPress={onAccept} />
+        </View>
       </View>
+      
+
+
+      </RNModal>
     </View>
-  );
+  )
 };
 
 const styles = StyleSheet.create({

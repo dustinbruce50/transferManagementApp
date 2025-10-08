@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import {Alert, Button, FlatList, StyleSheet, Text, View} from 'react-native';
 import TransferCard from '../TransferCard';
 import {Transfer} from "../types"
+import { useFocusEffect } from '@react-navigation/native';
 
 
 const renderItem = ({item}: {item: Transfer}) => (
@@ -17,9 +18,7 @@ const renderItem = ({item}: {item: Transfer}) => (
 const Delivered = () => {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
 
-  useEffect(() => {
-    fetchTransfers();
-  }, []);
+  
   const fetchTransfers = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
@@ -37,6 +36,12 @@ const Delivered = () => {
       Alert.alert('Error fetching transfers');
     }
   };
+
+  useFocusEffect(
+      React.useCallback(() => {
+        fetchTransfers();
+      }, [])
+    );
 
   return (
     <View>

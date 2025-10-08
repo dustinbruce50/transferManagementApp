@@ -4,6 +4,7 @@ import React, { useEffect } from 'react'
 import { Alert, FlatList, Text, View } from 'react-native'
 import { Transfer } from '../types';
 import TransferCard from '../TransferCard';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 const DriverRecentlyDelivered = () => {
@@ -27,10 +28,11 @@ const DriverRecentlyDelivered = () => {
     }
   };
 
-  useEffect(() => {
-    console.log("Fetching recent transfers");
-      fetchRecentTransfers();
-    }, []);
+    useFocusEffect(
+        React.useCallback(() => {
+          fetchRecentTransfers();
+        }, [])
+      );
 
      const renderItem = ({item}: {item: Transfer}) => (
     <View>

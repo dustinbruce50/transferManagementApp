@@ -4,6 +4,7 @@ import React, { useEffect } from 'react'
 import { Alert, FlatList, Text, View } from 'react-native'
 import { Transfer } from '../types';
 import TransferCard from '../TransferCard';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 const DriverInTransit = () => {
@@ -28,10 +29,11 @@ const DriverInTransit = () => {
     }
   };
 
-  useEffect(() => {
-    console.log("Fetching in-transit");
-      fetchInTransit();
-    }, []);
+  useFocusEffect(
+      React.useCallback(() => {
+        fetchInTransit();
+      }, [])
+    );
 
     const handleSubmit = async (id: String) => {
       try {
