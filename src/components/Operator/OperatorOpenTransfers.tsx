@@ -11,12 +11,14 @@ import {
   Text,
   TextInput,
   View,
+  KeyboardAvoidingView,
 } from 'react-native';
 import RNModal from 'react-native-modal';
 import {Transfer} from "../types"
 import TransferCard from '../TransferCard';
 import {Picker} from '@react-native-picker/picker';
 import { useFocusEffect } from '@react-navigation/native';
+
 
 const OperatorOpenTransfers = () => {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
@@ -158,15 +160,17 @@ const OperatorOpenTransfers = () => {
       >
       <View style={styles.modalContent}>
         <View style={styles.modalContent2}>
-        <Text>Accept Transfer</Text>
+        <Text style={styles.modalHeader}>Accept Transfer</Text>
         <TextInput
           style={styles.input2}
           placeholder="Amount Sent"
           keyboardType="numeric"
           value={amountSent}
           onChangeText={setAmountSent}
+          inputMode='numeric'
         />
         <Picker
+        //style={styles.picker}
           selectedValue={countTypeSent}
           onValueChange={setCountTypeSent}
           prompt="Select type"
@@ -187,16 +191,24 @@ const OperatorOpenTransfers = () => {
 };
 
 const styles = StyleSheet.create({
+  modalHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center', 
+    
+  },
   modal: {
     flex: 1,
   },
-  button: {
+  /**button: {
     backgroundColor: '#841584',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
     marginVertical: 8,
   },
+  **/
   buttonText: {},
   item: {
     backgroundColor: '#f9c2ff',
@@ -224,28 +236,31 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   input2: {
+    textAlign: 'center',
     borderWidth: 1,
     borderColor: 'black',
-    width: 200,
+    width: '100%',
     marginBottom: 24,
-    padding: 8,
-    height: 50,
+    height: '50px',
+    
   },
   modalContent: {
     flex: 1,
-    backgroundColor: 'rgba(255,255,255,.9)',
-    //backgroundColor: 'purple',
+    backgroundColor: 'transparent',
     justifyContent: 'flex-end',
+    
     //height: '50%',
     alignItems: 'center',
     //overflow: 'hidden',
+    height: 'auto',
   },
   modalContent2: {
-    backgroundColor: 'green',
+    padding: 20,
+    backgroundColor: 'white',
     height: '50%',
     width: '100%',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
   inputModal: {
     borderWidth: 1,
