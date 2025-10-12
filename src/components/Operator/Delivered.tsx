@@ -1,29 +1,25 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {Alert, Button, FlatList, StyleSheet, Text, View} from 'react-native';
 import TransferCard from '../TransferCard';
-import {Transfer} from "../types"
-import { useFocusEffect } from '@react-navigation/native';
-
+import {Transfer} from '../types';
+import {useFocusEffect} from '@react-navigation/native';
 
 const renderItem = ({item}: {item: Transfer}) => (
   <View>
-    <TransferCard item={item}/>
-
+    <TransferCard item={item} />
   </View>
 );
-
 
 const Delivered = () => {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
 
-  
   const fetchTransfers = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
       const response = await axios.get(
-        'http://10.0.2.2:3000/transfers/delivered',
+        'http://10.0.2.2:3000/transfers/status/delivered',
         {
           headers: {
             'x-auth-token': token,
@@ -38,19 +34,19 @@ const Delivered = () => {
   };
 
   useFocusEffect(
-      React.useCallback(() => {
-        fetchTransfers();
-      }, [])
-    );
+    React.useCallback(() => {
+      fetchTransfers();
+    }, []),
+  );
 
   return (
     <View>
       <Text>Delivered</Text>
       <FlatList
-              data={transfers}
-              renderItem={renderItem}
-              keyExtractor={(item: Transfer) => item._id}
-            />
+        data={transfers}
+        renderItem={renderItem}
+        keyExtractor={(item: Transfer) => item._id}
+      />
     </View>
   );
 };

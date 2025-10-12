@@ -3,15 +3,12 @@ import {Picker} from '@react-native-picker/picker';
 import axios from 'axios';
 import React, {useState} from 'react';
 import {Alert, Button, StyleSheet, Text, TextInput, View} from 'react-native';
-import {Transfer} from "../types"
+import {Transfer} from '../types';
 
 const RequestTransfer = () => {
   const [item, setItem] = useState('');
   const [amountReq, setAmountReq] = useState('');
   const [amountReqType, setAmountReqType] = useState('EA');
-  
-  
-  
 
   const handleSubmit = async () => {
     try {

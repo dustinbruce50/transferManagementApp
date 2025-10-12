@@ -12,10 +12,8 @@ import {
   View,
 } from 'react-native';
 import TransferCard from '../TransferCard';
-import {Transfer} from "../types"
-import { useFocusEffect } from '@react-navigation/native';
-
-
+import {Transfer} from '../types';
+import {useFocusEffect} from '@react-navigation/native';
 
 const DriverScreen = () => {
   const [transfers, setTransfers] = React.useState<Transfer[]>([]);
@@ -24,7 +22,7 @@ const DriverScreen = () => {
     try {
       const token = await AsyncStorage.getItem('token');
       const response = await axios.get(
-        'http://10.0.2.2:3000/transfers/accepted',
+        'http://10.0.2.2:3000/transfers/status/accepted',
         {
           headers: {
             'x-auth-token': token,
@@ -45,7 +43,7 @@ const DriverScreen = () => {
   useFocusEffect(
     React.useCallback(() => {
       fetchTransfers();
-    }, [])
+    }, []),
   );
   const renderItem = ({item}: {item: Transfer}) => (
     <View>

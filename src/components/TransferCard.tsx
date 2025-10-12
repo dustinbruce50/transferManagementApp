@@ -21,6 +21,20 @@ interface TransferCardProps {
   onPressButton?: () => void;
 }
 
+const Row = ({label, value}: {label: string; value?: string | number}) => {
+  if (value === null || value === undefined) return null;
+  return (
+    <View style={styles.row}>
+      <Text style={styles.label} numberOfLines={1}>
+        {label}:
+      </Text>
+      <Text style={styles.value} numberOfLines={1}>
+        {String(value)}
+      </Text>
+    </View>
+  );
+};
+
 const TransferCard: React.FC<TransferCardProps> = ({
   item,
   buttonTitle,
@@ -28,18 +42,33 @@ const TransferCard: React.FC<TransferCardProps> = ({
 }) => {
   return (
     <View style={styles.card}>
+      {/** 
       <Text>Item: {item.item}</Text>
       <Text>Requesting Unit: {item.receivingUnit}</Text>
       <Text>Sending Unit: {item.sendingUnit}</Text>
-      <Text>
-        Amount Requested: {item.amountReq} {item.amountReqType}
-      </Text>
+      <Text>Amount Requested: {item.amountReq} {item.amountReqType}</Text>
       {item.amountSent == null ? null : (
         <Text>
-          Sent: {item.amountSent} {item.amountSentType}{' '}
+          {`Sent: ${item.amountSent} ${item.amountSentType}`}
         </Text>
       )}
-      {item.cost == null ? null : <Text>Cost: {item.cost} </Text>}
+      {item.cost == null ? null : <Text>{`Cost: ${item.cost}`}</Text>}
+      {buttonTitle && onPressButton && (
+        <Button title={buttonTitle} onPress={onPressButton} />
+      )}
+        
+      */}
+      <Row label="Item" value={item.item} />
+      <Row label="Requesting Unit" value={item.receivingUnit} />
+      <Row label="Sending Unit" value={item.sendingUnit} />
+      <Row
+        label="Amount Requested"
+        value={`${item.amountReq} ${item.amountReqType}`}
+      />
+      {item.amountSent == null ? null : (
+        <Row label="Sent" value={`${item.amountSent} ${item.amountSentType}`} />
+      )}
+      {item.cost == null ? null : <Row label="Cost" value={item.cost} />}
       {buttonTitle && onPressButton && (
         <Button title={buttonTitle} onPress={onPressButton} />
       )}
@@ -62,6 +91,21 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    marginBottom: 5,
+  },
+  label: {
+    width: 150,
+    marginRight: 8,
+    color: '#444',
+    fontWeight: '600',
+  },
+  value: {
+    flex: 1,
+    color: '#111',
   },
 });
 export default TransferCard;

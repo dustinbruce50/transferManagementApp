@@ -1,11 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import React, { useEffect } from 'react'
-import { Alert, FlatList, Text, View } from 'react-native'
-import { Transfer } from '../types';
+import React, {useEffect} from 'react';
+import {Alert, FlatList, Text, View} from 'react-native';
+import {Transfer} from '../types';
 import TransferCard from '../TransferCard';
-import { useFocusEffect } from '@react-navigation/native';
-
+import {useFocusEffect} from '@react-navigation/native';
 
 const DriverRecentlyDelivered = () => {
   const [transfers, setTransfers] = React.useState<Transfer[]>([]);
@@ -14,7 +13,7 @@ const DriverRecentlyDelivered = () => {
     try {
       const token = await AsyncStorage.getItem('token');
       const response = await axios.get(
-        'http://10.0.2.2:3000/transfers/delivered',
+        'http://10.0.2.2:3000/transfers/status/delivered',
         {
           headers: {
             'x-auth-token': token,
@@ -28,13 +27,13 @@ const DriverRecentlyDelivered = () => {
     }
   };
 
-    useFocusEffect(
-        React.useCallback(() => {
-          fetchRecentTransfers();
-        }, [])
-      );
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchRecentTransfers();
+    }, []),
+  );
 
-     const renderItem = ({item}: {item: Transfer}) => (
+  const renderItem = ({item}: {item: Transfer}) => (
     <View>
       <TransferCard
         item={item}
@@ -46,17 +45,17 @@ const DriverRecentlyDelivered = () => {
 
   return (
     <View>
-          <Text>Recently Delivered Transfers</Text>
-          <FlatList
-            data={transfers}
-            renderItem={renderItem}
-            keyExtractor={(item: Transfer) => item._id}
-          />
-        </View>
-  )
-}
+      <Text>Recently Delivered Transfers</Text>
+      <FlatList
+        data={transfers}
+        renderItem={renderItem}
+        keyExtractor={(item: Transfer) => item._id}
+      />
+    </View>
+  );
+};
 
-export default DriverRecentlyDelivered
+export default DriverRecentlyDelivered;
 
 function handleSubmit(_id: string): void {
   throw new Error('Function not implemented.');

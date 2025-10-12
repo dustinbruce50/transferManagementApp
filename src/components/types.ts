@@ -6,8 +6,8 @@ export type RootStackParamList = {
   DriverScreen: undefined;
   RegisterScreen: undefined;
   Home: undefined;
-  OperatorTabs: undefined,
-  DriverTabs: undefined,
+  OperatorTabs: undefined;
+  DriverTabs: undefined;
 };
 
 export type LoginScreenNavigationProp = StackNavigationProp<

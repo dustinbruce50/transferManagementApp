@@ -22,14 +22,14 @@ const TransferSchema = new mongoose.Schema({
     required: true,
   },
   amountReqType: {
-    type: String
+    type: String,
   },
   amountSent: {
     type: Number,
     //required: true,
   },
   amountSentType: {
-    type: String
+    type: String,
   },
   date: {
     type: Date,
@@ -42,7 +42,7 @@ const TransferSchema = new mongoose.Schema({
   receivingUnit: {
     type: String,
     default: 'Not Assigned',
-  }
+  },
 });
 
 module.exports = mongoose.model('Transfer', TransferSchema);

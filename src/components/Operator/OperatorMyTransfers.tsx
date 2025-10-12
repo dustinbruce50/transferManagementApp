@@ -12,6 +12,7 @@ import {
   TextInput,
   View,
   KeyboardAvoidingView,
+  SectionList,
 } from 'react-native';
 import RNModal from 'react-native-modal';
 import {Transfer} from '../types';
@@ -19,7 +20,7 @@ import TransferCard from '../TransferCard';
 import {Picker} from '@react-native-picker/picker';
 import {useFocusEffect} from '@react-navigation/native';
 
-const OperatorOpenTransfers = () => {
+const OperatorMyTransfers = () => {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
   const [amountSent, setAmountSent] = useState<string>('');
   const [countTypeSent, setCountTypeSent] = useState<string>('EA');
@@ -28,6 +29,13 @@ const OperatorOpenTransfers = () => {
   );
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const isMounted = useRef<boolean>(true);
+  const [outTrans, setOutTrans] = useState<Transfer[]>([]);
+  const [inTrans, setInTrans] = useState<Transfer[]>([]);
+  const [unitNum, setUnitNum] = useState<string | null>(null);
+ 
+  
+
+  const fetchAbort = useRef<AbortController | null>(null);
 
   useEffect(() => {
     isMounted.current = true;
@@ -35,6 +43,7 @@ const OperatorOpenTransfers = () => {
       isMounted.current = false;
     };
   }, []);
+  
 
   const renderItem = ({item}: {item: Transfer}) => (
     <View>
@@ -58,14 +67,16 @@ const OperatorOpenTransfers = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      fetchTransfers();
+      fetchOpenTransfers();
     }, []),
   );
-  const fetchTransfers = async () => {
+  const fetchOpenTransfers = async () => {
+
     try {
+      const unitNum = await AsyncStorage.getItem('unitNum');
       const token = await AsyncStorage.getItem('token');
       const response = await axios.get(
-        'http://10.0.2.2:3000/transfers/status/requested',
+        `http://10.0.2.2:3000/transfers/unit/${unitNum}`,
         {
           headers: {
             'x-access-token': token,
@@ -73,12 +84,22 @@ const OperatorOpenTransfers = () => {
         },
       );
       if (isMounted.current) {
-        setTransfers(response.data);
+        //setTransfers(response.data);
       }
+      if (isMounted.current) {
+        setInTrans(response.data.filter((t: Transfer) => t.receivingUnit === unitNum));
+        setOutTrans(response.data.filter((t: Transfer) => t.sendingUnit === unitNum));
+        
+      }
+      
+      //console.log('intrans:', inTrans);
+      //console.log('outtrans:', outTrans);
     } catch (error) {
       console.log(error);
       Alert.alert('Error fetching transfers');
     }
+    
+    
   };
 
   const onAccept = async () => {
@@ -131,56 +152,46 @@ const OperatorOpenTransfers = () => {
 
   return (
     <View style={{flex: 1}}>
-      <Text>Open Requests</Text>
+      {/**
+      <Text>My In Transfers</Text>
       <FlatList
-        data={transfers}
+        data={inTrans}
         renderItem={renderItem}
         keyExtractor={(item: Transfer) => item._id}
       />
+      
+      
+      <Text>My Out Transfers</Text>
+      <FlatList
+        data={outTrans}
+        renderItem={renderItem}
+        keyExtractor={(item: Transfer) => item._id}
+      />
+       */}
+      <SectionList
+        sections={[
+          {title: 'My In Transfers', data: inTrans},
+          {title: 'My Out Transfers', data: outTrans},
+        ]}
+        renderItem={renderItem}
+        keyExtractor={(item: Transfer) => item._id}
+        renderSectionHeader={({section: {title}}) => (
+          <Text style={{textAlign: 'center',fontSize: 18, fontWeight: 'bold', marginTop: 16}}>
+            {title}
+          </Text>
+        )}
+      >
 
-      <RNModal
-        isVisible={modalVisible}
-        onBackdropPress={closeModal}
-        //animation=""
-        animationInTiming={100}
-        animationOutTiming={100}
-        //avoidKeyboard={true}
-        hasBackdrop={true}
-        backdropColor="black"
-        backdropOpacity={0.7}
-        backdropTransitionInTiming={1000}
-        backdropTransitionOutTiming={1000}
-        onBackButtonPress={closeModal}
-        onModalHide={fetchTransfers}>
-        <View style={styles.modalContent}>
-          <View style={styles.modalContent2}>
-            <Text style={styles.modalHeader}>Accept Transfer</Text>
-            <TextInput
-              style={styles.input2}
-              placeholder="Amount Sent"
-              keyboardType="numeric"
-              value={amountSent}
-              onChangeText={setAmountSent}
-              inputMode="numeric"
-            />
-            <Picker
-              //style={styles.picker}
-              selectedValue={countTypeSent}
-              onValueChange={setCountTypeSent}
-              prompt="Select type">
-              <Picker.Item label="Ea" value="EA" />
-              <Picker.Item label="CS" value="CS" />
-              <Picker.Item label="Lb" value="LB" />
-            </Picker>
-            <Button title="Accept" onPress={onAccept} />
-          </View>
-        </View>
-      </RNModal>
+      </SectionList>
+      
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  transferBox: {
+  
+  },
   modalHeader: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -262,4 +273,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default OperatorOpenTransfers;
+export default OperatorMyTransfers;
