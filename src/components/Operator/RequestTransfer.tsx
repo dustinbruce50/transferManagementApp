@@ -4,6 +4,7 @@ import axios from 'axios';
 import React, {useState} from 'react';
 import {Alert, Button, StyleSheet, Text, TextInput, View} from 'react-native';
 import {Transfer} from '../types';
+import { SERVER_IP } from '@env';
 
 const RequestTransfer = () => {
   const [item, setItem] = useState('');
@@ -15,7 +16,7 @@ const RequestTransfer = () => {
       const token = await AsyncStorage.getItem('token');
       const unitNum = await AsyncStorage.getItem('unitNum');
       const response = await axios.post(
-        'http://10.0.2.2:3000/transfers/requested',
+        `${SERVER_IP}/transfers/requested`,
         {
           item,
           amountReq,

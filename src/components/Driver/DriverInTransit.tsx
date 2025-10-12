@@ -14,7 +14,7 @@ const DriverInTransit = () => {
       const token = await AsyncStorage.getItem('token');
       console.log('React Fetch Transit Function');
       const response = await axios.get(
-        'http://10.0.2.2:3000/transfers/status/in-transit',
+        `${SERVER_IP}/transfers/status/in-transit`,
         {
           headers: {
             'x-auth-token': token,
@@ -38,7 +38,7 @@ const DriverInTransit = () => {
     try {
       const token = await AsyncStorage.getItem('token');
       const response = await axios.put(
-        `http://10.0.2.2:3000/transfers/${id}`,
+        `${SERVER_IP}/transfers/${id}`,
         {
           id,
           status: 'delivered',

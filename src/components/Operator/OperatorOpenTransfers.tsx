@@ -18,6 +18,7 @@ import {Transfer} from '../types';
 import TransferCard from '../TransferCard';
 import {Picker} from '@react-native-picker/picker';
 import {useFocusEffect} from '@react-navigation/native';
+import { SERVER_IP } from '@env';
 
 const OperatorOpenTransfers = () => {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
@@ -65,7 +66,7 @@ const OperatorOpenTransfers = () => {
     try {
       const token = await AsyncStorage.getItem('token');
       const response = await axios.get(
-        'http://10.0.2.2:3000/transfers/status/requested',
+        `${SERVER_IP}/transfers/status/requested`,
         {
           headers: {
             'x-access-token': token,
@@ -100,7 +101,7 @@ const OperatorOpenTransfers = () => {
       const token = await AsyncStorage.getItem('token');
       const unitNum = await AsyncStorage.getItem('unitNum');
       const response = await axios.put(
-        `http://10.0.2.2:3000/transfers/${id}`,
+        `${SERVER_IP}/transfers/${id}`,
         {
           id,
           status: 'accepted',

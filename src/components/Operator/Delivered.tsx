@@ -19,7 +19,7 @@ const Delivered = () => {
     try {
       const token = await AsyncStorage.getItem('token');
       const response = await axios.get(
-        'http://10.0.2.2:3000/transfers/status/delivered',
+        `${SERVER_IP}/transfers/status/delivered`,
         {
           headers: {
             'x-auth-token': token,

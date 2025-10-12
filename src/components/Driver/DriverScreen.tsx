@@ -22,7 +22,7 @@ const DriverScreen = () => {
     try {
       const token = await AsyncStorage.getItem('token');
       const response = await axios.get(
-        'http://10.0.2.2:3000/transfers/status/accepted',
+        `${SERVER_IP}/transfers/status/accepted`,
         {
           headers: {
             'x-auth-token': token,
@@ -59,7 +59,7 @@ const DriverScreen = () => {
     try {
       const token = await AsyncStorage.getItem('token');
       const response = await axios.put(
-        `http://10.0.2.2:3000/transfers/${id}`,
+        `${SERVER_IP}/transfers/${id}`,
         {
           id,
           status: 'in-transit',

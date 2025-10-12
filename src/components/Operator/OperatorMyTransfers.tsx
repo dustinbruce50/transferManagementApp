@@ -19,6 +19,7 @@ import {Transfer} from '../types';
 import TransferCard from '../TransferCard';
 import {Picker} from '@react-native-picker/picker';
 import {useFocusEffect} from '@react-navigation/native';
+import { SERVER_IP } from '@env';
 
 const OperatorMyTransfers = () => {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
@@ -45,6 +46,14 @@ const OperatorMyTransfers = () => {
   }, []);
   
 
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchUnitNum();
+      fetchOpenTransfers();
+    }, []),
+  );
+  
+
   const renderItem = ({item}: {item: Transfer}) => (
     <View>
       <TransferCard
@@ -64,19 +73,18 @@ const OperatorMyTransfers = () => {
   const closeModal = () => {
     setModalVisible(false);
   };
+  const fetchUnitNum = async () => {  
+    const storedUnitNum = await AsyncStorage.getItem('unitNum');
+    setUnitNum(storedUnitNum);
+  };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      fetchOpenTransfers();
-    }, []),
-  );
   const fetchOpenTransfers = async () => {
 
     try {
-      const unitNum = await AsyncStorage.getItem('unitNum');
+      
       const token = await AsyncStorage.getItem('token');
       const response = await axios.get(
-        `http://10.0.2.2:3000/transfers/unit/${unitNum}`,
+        `${SERVER_IP}/transfers/unit/${unitNum}`,
         {
           headers: {
             'x-access-token': token,
@@ -121,7 +129,7 @@ const OperatorMyTransfers = () => {
       const token = await AsyncStorage.getItem('token');
       const unitNum = await AsyncStorage.getItem('unitNum');
       const response = await axios.put(
-        `http://10.0.2.2:3000/transfers/${id}`,
+        `${SERVER_IP}/transfers/${id}`,
         {
           id,
           status: 'accepted',
