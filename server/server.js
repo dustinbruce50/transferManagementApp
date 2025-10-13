@@ -35,6 +35,10 @@ const verifyToken = (req, res, next) => {
     next();
   });
 };
+//app.get('/ping', (rec, res) => {
+//	console.log('ping route hit');
+//	res.send('pong');
+//});
 app.use(userRoutes(verifyToken));
 app.use(transferRoutes(verifyToken));
 
@@ -53,6 +57,6 @@ try {
  */
 
 // Start server
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`Server is running on port ${port}`);
 });
