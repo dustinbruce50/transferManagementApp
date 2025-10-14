@@ -47,20 +47,22 @@ module.exports = verifyToken => {
       res.status(400).send(err);
     }
   });
-    router.get('/transfers/unit/:unit', async (req, res) => {
+  router.get('/transfers/unit/:unit', async (req, res) => {
     const {unit} = req.params;
-    
+
     console.log(`Fetching ${unit} transfers`);
 
     // Validate the status parameter
-    
+
     if (false) {
       return res
         .status(400)
         .send('Invalid status. Must be one of: requested, accepted, delivered');
     }
     try {
-      const transfers = await Transfer.find({$or: [{sendingUnit: unit}, {receivingUnit: unit}]});
+      const transfers = await Transfer.find({
+        $or: [{sendingUnit: unit}, {receivingUnit: unit}],
+      });
       res.status(200).send(transfers);
       console.log(transfers);
     } catch (err) {

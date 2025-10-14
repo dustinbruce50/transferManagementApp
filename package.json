@@ -36,6 +36,7 @@
     "nullthrows": "^1.1.1",
     "react": "19.1.0",
     "react-native": "0.81.4",
+    "react-native-auto-size-text": "^1.1.1",
     "react-native-dotenv": "^3.4.11",
     "react-native-gesture-handler": "^2.23.1",
     "react-native-modal": "^14.0.0-rc.1",

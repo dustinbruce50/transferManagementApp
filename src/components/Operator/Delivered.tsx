@@ -5,6 +5,7 @@ import {Alert, Button, FlatList, StyleSheet, Text, View} from 'react-native';
 import TransferCard from '../TransferCard';
 import {Transfer} from '../types';
 import {useFocusEffect} from '@react-navigation/native';
+import { SERVER_IP } from '@env';
 
 const renderItem = ({item}: {item: Transfer}) => (
   <View>

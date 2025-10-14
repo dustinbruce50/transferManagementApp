@@ -35,10 +35,10 @@ const verifyToken = (req, res, next) => {
     next();
   });
 };
-//app.get('/ping', (rec, res) => {
-//	console.log('ping route hit');
-//	res.send('pong');
-//});
+app.get('/ping', (rec, res) => {
+	console.log('ping route hit');
+	res.send('pong');
+});
 app.use(userRoutes(verifyToken));
 app.use(transferRoutes(verifyToken));
 

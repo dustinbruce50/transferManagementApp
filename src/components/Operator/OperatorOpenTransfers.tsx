@@ -18,7 +18,7 @@ import {Transfer} from '../types';
 import TransferCard from '../TransferCard';
 import {Picker} from '@react-native-picker/picker';
 import {useFocusEffect} from '@react-navigation/native';
-import { SERVER_IP } from '@env';
+import {SERVER_IP} from '@env';
 
 const OperatorOpenTransfers = () => {
   const [transfers, setTransfers] = useState<Transfer[]>([]);

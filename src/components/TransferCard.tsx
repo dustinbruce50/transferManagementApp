@@ -19,6 +19,7 @@ interface TransferCardProps {
   item: Transfer;
   buttonTitle?: string;
   onPressButton?: () => void;
+  buttonColor?: string;
 }
 
 const Row = ({label, value}: {label: string; value?: string | number}) => {
@@ -38,7 +39,9 @@ const Row = ({label, value}: {label: string; value?: string | number}) => {
 const TransferCard: React.FC<TransferCardProps> = ({
   item,
   buttonTitle,
+  buttonColor, 
   onPressButton,
+  
 }) => {
   return (
     <View style={styles.card}>
@@ -70,7 +73,7 @@ const TransferCard: React.FC<TransferCardProps> = ({
       )}
       {item.cost == null ? null : <Row label="Cost" value={item.cost} />}
       {buttonTitle && onPressButton && (
-        <Button title={buttonTitle} onPress={onPressButton} />
+        <Button title={buttonTitle} onPress={onPressButton} color={buttonColor} />
       )}
     </View>
   );

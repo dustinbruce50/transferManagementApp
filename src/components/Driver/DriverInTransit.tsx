@@ -5,6 +5,7 @@ import {Alert, FlatList, Text, View} from 'react-native';
 import {Transfer} from '../types';
 import TransferCard from '../TransferCard';
 import {useFocusEffect} from '@react-navigation/native';
+import { SERVER_IP } from '@env';
 
 const DriverInTransit = () => {
   const [transfers, setTransfers] = React.useState<Transfer[]>([]);

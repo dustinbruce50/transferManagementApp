@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {use, useEffect, useRef, useState} from 'react';
 import {
   Alert,
   Button,
@@ -20,6 +20,8 @@ import TransferCard from '../TransferCard';
 import {Picker} from '@react-native-picker/picker';
 import {useFocusEffect} from '@react-navigation/native';
 import { SERVER_IP } from '@env';
+import { AutoSizeText, ResizeTextMode } from 'react-native-auto-size-text';
+
 
 const OperatorMyTransfers = () => {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
@@ -45,43 +47,91 @@ const OperatorMyTransfers = () => {
     };
   }, []);
   
+  useEffect(() => {
+    console.log('Setting unit num');
+    fetchUnitNum();
+  }, []);
 
   useFocusEffect(
     React.useCallback(() => {
-      fetchUnitNum();
+      
       fetchOpenTransfers();
-    }, []),
+    }, [unitNum]),
+
   );
   
 
-  const renderItem = ({item}: {item: Transfer}) => (
-    <View>
+  const renderItem = ({item}: {item: Transfer}) => {
+    let cancellable = false;
+    let pinColor='white';
+    let message = '';
+    if (item.type === 'requested') {
+      pinColor = '#FF5252';
+      message = 'Requested';
+    } else if (item.type === 'accepted'){
+      pinColor = '#FFC107';
+      message = 'Accepted';
+    } else if (item.type === 'delivered'){
+      pinColor = '#4CAF50';
+      message = 'Delivered';
+    }
+    if (item.type ==='requested' && item.receivingUnit === unitNum){
+      cancellable = true;
+    }
+    return(
+    <View style={{flex: 2}}>
       <TransferCard
         item={item}
-        buttonTitle="Accept Transfer"
-        onPressButton={() => openModal(item)}
-      />
+        buttonColor={cancellable ? "#FF5252" : "#D3D3D3"}
+        buttonTitle={cancellable ? "Cancel" : ""}
+        onPressButton={() => {
+          if (cancellable){
+            return(
+              openModal(item)
+            )
+          }
+          else {
+            return null;
+          }
+        }}
+      >
+      </TransferCard>
+      <View
+        style={{backgroundColor: pinColor, height: 25, width: 80, alignSelf:'flex-start', marginLeft: 25, borderRadius: 10}}
+      >
+        <Text
+          style={{color: 'black', textAlign: 'center', fontSize:14, fontWeight: 'bold' }}
+        >
+          {message}
+        </Text>
+      </View>
+
     </View>
-  );
+  )};
+
+
+      
+
 
   const openModal = (transfer: Transfer) => {
     setSelectedTransfer(transfer);
-    setAmountSent(transfer.amountReq?.toString() || '0'); // Use requested amount as default
-    setCountTypeSent(transfer.amountReqType || 'EA'); // Use requested type as default
+    //setAmountSent(transfer.amountReq?.toString() || '0'); // Use requested amount as default
+    //setCountTypeSent(transfer.amountReqType || 'EA'); // Use requested type as default
     setModalVisible(true);
+    //onCancel();
   };
   const closeModal = () => {
     setModalVisible(false);
   };
   const fetchUnitNum = async () => {  
     const storedUnitNum = await AsyncStorage.getItem('unitNum');
+    console.log('Stored unit num: ', storedUnitNum);
     setUnitNum(storedUnitNum);
+    console.log('unit num state: ', unitNum);
   };
 
   const fetchOpenTransfers = async () => {
-
     try {
-      
       const token = await AsyncStorage.getItem('token');
       const response = await axios.get(
         `${SERVER_IP}/transfers/unit/${unitNum}`,
@@ -95,9 +145,9 @@ const OperatorMyTransfers = () => {
         //setTransfers(response.data);
       }
       if (isMounted.current) {
-        setInTrans(response.data.filter((t: Transfer) => t.receivingUnit === unitNum));
-        setOutTrans(response.data.filter((t: Transfer) => t.sendingUnit === unitNum));
-        
+        setInTrans(response.data.filter((t: Transfer) => t.receivingUnit === unitNum && t.type !== 'cancelled'));
+        setOutTrans(response.data.filter((t: Transfer) => t.sendingUnit === unitNum && t.type !== 'cancelled'));
+
       }
       
       //console.log('intrans:', inTrans);
@@ -110,20 +160,8 @@ const OperatorMyTransfers = () => {
     
   };
 
-  const onAccept = async () => {
+  const onCancel = async () => {
     //if (amountSent == null || amountSent == 0) {
-    if (
-      !amountSent ||
-      parseFloat(amountSent) <= 0 ||
-      isNaN(parseFloat(amountSent))
-    ) {
-      Alert.alert('Please enter an amount to send');
-      return;
-    }
-    if (!countTypeSent) {
-      Alert.alert('Please select a count type');
-      return;
-    }
     try {
       const id = selectedTransfer?._id;
       const token = await AsyncStorage.getItem('token');
@@ -132,7 +170,7 @@ const OperatorMyTransfers = () => {
         `${SERVER_IP}/transfers/${id}`,
         {
           id,
-          status: 'accepted',
+          status: 'cancelled',
           amountSent: parseFloat(amountSent),
           amountSentType: countTypeSent,
           sendingUnit: unitNum,
@@ -154,28 +192,12 @@ const OperatorMyTransfers = () => {
       console.warn('crash test 3');
     } catch (error) {
       console.log(error);
-      Alert.alert('Error Accepting Transfer');
+      Alert.alert('Error Cancelling Transfer');
     }
   };
 
   return (
     <View style={{flex: 1}}>
-      {/**
-      <Text>My In Transfers</Text>
-      <FlatList
-        data={inTrans}
-        renderItem={renderItem}
-        keyExtractor={(item: Transfer) => item._id}
-      />
-      
-      
-      <Text>My Out Transfers</Text>
-      <FlatList
-        data={outTrans}
-        renderItem={renderItem}
-        keyExtractor={(item: Transfer) => item._id}
-      />
-       */}
       <SectionList
         sections={[
           {title: 'My In Transfers', data: inTrans},
@@ -191,6 +213,28 @@ const OperatorMyTransfers = () => {
       >
 
       </SectionList>
+      <RNModal
+        isVisible={modalVisible}
+        onBackdropPress={closeModal}
+        style={styles.modal}
+        onBackButtonPress={closeModal}
+        backdropColor='green'
+
+      >
+        <View
+          style={{
+          backgroundColor: 'lightcoral',
+          height: 200,
+          width: 200,
+          alignSelf: 'center',
+          borderRadius: 10,
+          
+          }}
+        >
+          <Button title="Cancel Transfer" onPress={onCancel} />
+        </View>
+
+      </RNModal>
       
     </View>
   );

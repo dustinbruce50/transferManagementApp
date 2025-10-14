@@ -4,7 +4,7 @@ import axios from 'axios';
 import React, {useState} from 'react';
 import {Alert, Button, StyleSheet, Text, TextInput, View} from 'react-native';
 import {Transfer} from '../types';
-import { SERVER_IP } from '@env';
+import {SERVER_IP} from '@env';
 
 const RequestTransfer = () => {
   const [item, setItem] = useState('');

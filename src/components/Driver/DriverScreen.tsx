@@ -14,6 +14,7 @@ import {
 import TransferCard from '../TransferCard';
 import {Transfer} from '../types';
 import {useFocusEffect} from '@react-navigation/native';
+import { SERVER_IP } from '@env';
 
 const DriverScreen = () => {
   const [transfers, setTransfers] = React.useState<Transfer[]>([]);

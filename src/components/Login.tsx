@@ -17,7 +17,7 @@ import {
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {LoginScreenNavigationProp} from './types';
-import { SERVER_IP } from '@env';
+import {SERVER_IP} from '@env';
 
 type Props = {
   navigation: LoginScreenNavigationProp;
@@ -39,6 +39,7 @@ const Login = ({navigation}: Props) => {
 
   const handleSubmit = async () => {
     console.log('Username: ', username);
+    console.log('server ip: ', SERVER_IP);
     try {
       const response = await axios.post(`${SERVER_IP}/login`, {
         username,
@@ -61,8 +62,7 @@ const Login = ({navigation}: Props) => {
         console.log('You have successfully logged in');
 
         Alert.alert('Success', 'You have successfully logged in');
-      }
-      else{
+      } else {
         console.log('Login failed with status: ', response.status);
       }
       navigation.navigate('Home');
@@ -123,7 +123,7 @@ const Login = ({navigation}: Props) => {
           />
 
           <Button title="Login" onPress={handleSubmit} />
-          <Button title="register" onPress={navigateToRegister} />
+          <Button title="Register" onPress={navigateToRegister} />
         </View>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>

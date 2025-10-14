@@ -15,7 +15,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {RegisterScreenNavigationProp} from './types';
 import {Picker} from '@react-native-picker/picker';
-import { SERVER_IP } from '@env';
+import {SERVER_IP} from '@env';
 
 type Props = {
   navigation: RegisterScreenNavigationProp;
@@ -50,7 +50,6 @@ const RegisterScreen = ({navigation}: Props) => {
       if (error instanceof Error) {
         console.log('Error(Error): ', error);
         console.log('SERVER_IP: ', SERVER_IP);
-       
       } else {
         console.log('An error occured that wasnt an isntance of error');
         Alert.alert('Error', 'An error occured');
