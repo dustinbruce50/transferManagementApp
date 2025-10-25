@@ -18,6 +18,15 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {LoginScreenNavigationProp} from './types';
 import {SERVER_IP} from '@env';
+import {showNotification} from '../services/notifications';
+import { getMessaging } from '@react-native-firebase/messaging';
+import analytics from '@react-native-firebase/analytics';
+
+async function getFCMToken() {
+  const token = await getMessaging().getToken();
+  console.log('FCM Token: ', token);
+  return token;
+}
 
 type Props = {
   navigation: LoginScreenNavigationProp;
@@ -28,8 +37,28 @@ const Login = ({navigation}: Props) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [unitNum, setUnitNum] = useState('');
-
+  const [FCMtoken, setFCMToken] = useState('');
+  
+  //get token, log event, unsubscribe on unmount
   useEffect(() => {
+
+    if(FCMtoken===''){
+          getFCMToken().then(FCMtoken => {
+          console.log('Retrieved FCM Token in Login component: ', FCMtoken);
+          setFCMToken(FCMtoken);
+        }).catch(error => {
+          console.log('Error retrieving FCM Token in Login component: ', error);
+        });
+      try{
+        analytics().logEvent('test_event', {
+        item: 'login_screen_opened',
+        description: 'User opened the login screen',
+        });
+        console.log("Analytics event should be logged");
+      } catch (error) {
+        console.log('Error logging analytics event: ', error);
+      }
+    }
     return () => {
       isMounted.current = false;
     };
@@ -37,13 +66,18 @@ const Login = ({navigation}: Props) => {
 
   const passwordInputRef = useRef<TextInput>(null);
 
+  //send login request, sends FCM token to server
+  //set token, userType, username, id, unitNum in AsyncStorage
+  
   const handleSubmit = async () => {
     console.log('Username: ', username);
-    console.log('server ip: ', SERVER_IP);
+    console.log('Password: ', password);
+    console.log('FCMtoken being sent: ', FCMtoken);
     try {
       const response = await axios.post(`${SERVER_IP}/login`, {
         username,
         password,
+        FCMtoken, 
       });
       console.log('Response: ', response);
       const {token, userType, id, unitNum} = response.data;
@@ -52,6 +86,7 @@ const Login = ({navigation}: Props) => {
       await AsyncStorage.setItem('username', username);
       await AsyncStorage.setItem('userId', id.toString());
       await AsyncStorage.setItem('unitNum', unitNum);
+      console.log("FCMtoken: ", FCMtoken);
       console.log('Token: ', token);
       console.log('UserType: ', userType);
       console.log('User name: ', username);
@@ -86,9 +121,11 @@ const Login = ({navigation}: Props) => {
       }
     }
   };
+  //if login authorized
   const navigateToRegister = () => {
     navigation.navigate('RegisterScreen');
   };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
@@ -124,6 +161,7 @@ const Login = ({navigation}: Props) => {
 
           <Button title="Login" onPress={handleSubmit} />
           <Button title="Register" onPress={navigateToRegister} />
+          <Button title="Notif Test?" onPress={() => showNotification('Test Notification', 'This is a test notification')} />
         </View>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>

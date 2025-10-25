@@ -1,17 +1,17 @@
 {
-  "extends": "@react-native/typescript-config/tsconfig.json",
-  "compilerOptions": {
-    "lib": ["es2015", "es2017", "es2018", "dom"],
-    "target": "es2017",
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "isolatedModules": true,
-    "jsx": "react-native",
-    "moduleResolution": "bundler",
-    "noEmit": true,
-    "strict": true,
-    "skipLibCheck": true
-  },
-  "include": ["env.d.ts", "src"]
+	"extends": "@react-native/typescript-config/tsconfig.json",
+	"compilerOptions": {
+		"lib": ["es2015", "es2017", "es2018", "dom"],
+		"target": "es2017",
+		"allowJs": true,
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"isolatedModules": true,
+		"jsx": "react-native",
+		"moduleResolution": "bundler",
+		"noEmit": true,
+		"strict": true,
+		"skipLibCheck": true
+	},
+	"include": ["env.d.ts", "src"]
 }

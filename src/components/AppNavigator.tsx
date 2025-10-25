@@ -1,6 +1,6 @@
 import React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import Login from '../components/Login';
 
 import DriverScreen from './Driver/DriverScreen.tsx';
@@ -8,8 +8,8 @@ import RegisterScreen from './RegisterScreen.tsx';
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
-  return (
-    /*
+	return (
+		/*
     //<NavigationContainer>
     <Stack.Navigator initialRouteName="Login">
       <Stack.Screen name="Login" component={Login} />
@@ -19,8 +19,8 @@ const AppNavigator = () => {
     </Stack.Navigator>
     //</NavigationContainer>
     */
-    console.log()
-  );
+		console.log()
+	);
 };
 
 export default AppNavigator;
