@@ -21,7 +21,6 @@ import OperatorTabs from './src/components/Operator/OperatorTabs';
 import DriverTabs from './src/components/Driver/DriverTabs';
 import {
 	requestUserPermission,
-	setupNotifications,
 } from './src/services/notifications';
 
 type SectionProps = PropsWithChildren<{
@@ -33,12 +32,12 @@ const Stack = createStackNavigator<RootStackParamList>();
 function App(): React.JSX.Element {
 	useEffect(() => {
 		requestUserPermission();
-		setupNotifications();
+		//setupNotifications();
 	}, []);
 
 	return (
-		<SafeAreaView style={styles.container}>
-			<NavigationContainer>
+
+			<NavigationContainer >
 				<Stack.Navigator initialRouteName="Login">
 					<Stack.Screen
 						name="Login"
@@ -63,7 +62,7 @@ function App(): React.JSX.Element {
 					/>
 				</Stack.Navigator>
 			</NavigationContainer>
-		</SafeAreaView>
+
 	);
 }
 const styles = StyleSheet.create({

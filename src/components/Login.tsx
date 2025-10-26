@@ -18,11 +18,12 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {LoginScreenNavigationProp} from './types';
 import {SERVER_IP} from '@env';
-import {showNotification} from '../services/notifications';
+//import {showNotification} from '../services/notifications';
 import { getMessaging } from '@react-native-firebase/messaging';
+//import {getMessaging} from 'firebase/inapp-messaging';
 import analytics from '@react-native-firebase/analytics';
 
-async function getFCMToken() {
+async function getfcmToken() {
   const token = await getMessaging().getToken();
   console.log('FCM Token: ', token);
   return token;
@@ -37,27 +38,18 @@ const Login = ({navigation}: Props) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [unitNum, setUnitNum] = useState('');
-  const [FCMtoken, setFCMToken] = useState('');
+  const [fcmToken, setfcmToken] = useState('');
   
   //get token, log event, unsubscribe on unmount
   useEffect(() => {
 
-    if(FCMtoken===''){
-          getFCMToken().then(FCMtoken => {
-          console.log('Retrieved FCM Token in Login component: ', FCMtoken);
-          setFCMToken(FCMtoken);
+    if(fcmToken===''){
+          getfcmToken().then(fcmToken => {
+          console.log('Retrieved FCM Token in Login component: ', fcmToken);
+          setfcmToken(fcmToken);
         }).catch(error => {
           console.log('Error retrieving FCM Token in Login component: ', error);
         });
-      try{
-        analytics().logEvent('test_event', {
-        item: 'login_screen_opened',
-        description: 'User opened the login screen',
-        });
-        console.log("Analytics event should be logged");
-      } catch (error) {
-        console.log('Error logging analytics event: ', error);
-      }
     }
     return () => {
       isMounted.current = false;
@@ -72,12 +64,12 @@ const Login = ({navigation}: Props) => {
   const handleSubmit = async () => {
     console.log('Username: ', username);
     console.log('Password: ', password);
-    console.log('FCMtoken being sent: ', FCMtoken);
+    console.log('fcmToken being sent: ', fcmToken);
     try {
       const response = await axios.post(`${SERVER_IP}/login`, {
         username,
         password,
-        FCMtoken, 
+        fcmToken, 
       });
       console.log('Response: ', response);
       const {token, userType, id, unitNum} = response.data;
@@ -86,7 +78,7 @@ const Login = ({navigation}: Props) => {
       await AsyncStorage.setItem('username', username);
       await AsyncStorage.setItem('userId', id.toString());
       await AsyncStorage.setItem('unitNum', unitNum);
-      console.log("FCMtoken: ", FCMtoken);
+      console.log("fcmToken: ", fcmToken);
       console.log('Token: ', token);
       console.log('UserType: ', userType);
       console.log('User name: ', username);
@@ -161,7 +153,7 @@ const Login = ({navigation}: Props) => {
 
           <Button title="Login" onPress={handleSubmit} />
           <Button title="Register" onPress={navigateToRegister} />
-          <Button title="Notif Test?" onPress={() => showNotification('Test Notification', 'This is a test notification')} />
+          <Button title="Notif Test?" onPress={() => {}} />
         </View>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
