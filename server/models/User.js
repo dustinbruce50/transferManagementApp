@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const fcm = require('../routes/fcm');
 const AutoIncrement = require('mongoose-sequence')(
 	mongoose,
 );
@@ -12,6 +13,7 @@ const UserSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 		unique: false,
+		index: true,
 	},
 	name: {
 		type: String,
@@ -29,6 +31,10 @@ const UserSchema = new mongoose.Schema({
 	password: {
 		type: String,
 		required: true,
+	},
+	fcmToken: {
+		type: String,
+		required: false,
 	},
 });
 

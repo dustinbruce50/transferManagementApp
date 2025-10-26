@@ -8,7 +8,8 @@ module.exports = verifyToken => {
 
 	router.post('/login', async (req, res) => {
 		console.log('Request received');
-		const { username, password } = req.body;
+		console.log('Body: ', req.body);
+		const { username, password, fcmToken } = req.body;
 		console.log('Searching for user: ', username);
 		try {
 			const user = await User.findOne({ name: username });
@@ -20,23 +21,32 @@ module.exports = verifyToken => {
 				password,
 				user.password,
 			);
-
 			if (!validPassword) {
 				console.log('Invalid password');
 				return res.status(401).send('Invalid password');
+			}else {
+				console.log('Should have logged in...');
+				console.log('FCM Token from request: ', fcmToken);
+				console.log('User FCM Token: ', user.fcmToken);
+				if(user.fcmToken !== fcmToken) {
+					console.log('Updating FCM token');
+					user.fcmToken = fcmToken;
+					await user.save();
+					console.log('FCM token updated');
+				}
+				const token = jwt.sign({ id: user.id }, 'secret', {
+					expiresIn: 86400,
+				});
+					res.status(200).send({
+					auth: true,
+					token,
+					userType: user.userType,
+					id: user.userId,
+					unitNum: user.unitNum,
+				});
+
 			}
-			console.log('Should have logged in...');
-			const token = jwt.sign({ id: user.id }, 'secret', {
-				expiresIn: 86400,
-			});
-			res.status(200).send({
-				auth: true,
-				token,
-				userType: user.userType,
-				id: user.userId,
-				unitNum: user.unitNum,
-			});
-		} catch (err) {
+					} catch (err) {
 			console.log(err);
 			res.status(500).send('Error on the server');
 		}

@@ -57,7 +57,7 @@ app.get('/ping', (rec, res) => {
 	
 	res.send('pong');
 });
-//sendNotifs();
+sendNotifs();
 //routes
 app.use(fcmRoutes(verifyToken));
 app.use(userRoutes(verifyToken));
@@ -83,5 +83,4 @@ try {
 // Start server
 app.listen(port, '0.0.0.0', () => {
 	console.log(`Server is running on port ${port}`);
-	console.log('server is running');
 });

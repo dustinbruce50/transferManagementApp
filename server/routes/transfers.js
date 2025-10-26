@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Transfer = require('../models/Transfer');
+const sendNotifs = require('./notifs.js');
 
 module.exports = verifyToken => {
 	const router = express.Router();
@@ -24,6 +25,7 @@ module.exports = verifyToken => {
 					type: 'requested',
 				});
 				await transfer.save();
+				sendNotifs(transfer);
 				res.status(200).send(transfer);
 			} catch (err) {
 				console.log(err);
@@ -136,6 +138,7 @@ module.exports = verifyToken => {
 					);
 				}
 				await transfer.save();
+				sendNotifs(transfer);
 				res
 					.status(200)
 					.send('Transfer updated successfully');

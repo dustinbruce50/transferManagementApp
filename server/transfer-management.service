@@ -1,0 +1,13 @@
+[Unit]
+Description=Transfer Management App Server
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/localUsr/transferManagementApp/server
+ExecStart=/bin/bash /home/localUsr/transferManagementApp/server/start-server.sh
+Restart=on-failure
+User=localUsr
+
+[Install]
+WantedBy=multi-user.target
