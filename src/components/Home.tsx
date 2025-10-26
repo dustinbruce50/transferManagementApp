@@ -10,15 +10,15 @@ import messaging from '@react-native-firebase/messaging';
 type Props = {
 	navigation: HomeScreenNavigationProp;
 };
-const manReqPerm = async () => {
-	const auth = await messaging.requestPermission();
-	console.log('Manual permission request status:', auth);
-}
+//const manReqPerm = async () => {
+//	const auth = await messaging.requestPermission();
+//	console.log('Manual permission request status:', auth);
+//}
 
 const Home = ({ navigation }: Props) => {
 	useEffect(() => {
 		requestUserPermission();
-		manReqPerm();
+		//manReqPerm();
 		createChannel();
 		const unsubscribe = onForegroundNotification();
 		onBackgroundNotification();

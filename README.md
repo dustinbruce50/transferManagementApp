@@ -1,97 +1,89 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+> ⚠️ **Portfolio Project**  
+> This repository is intended for demonstration and portfolio purposes only.  
+> It is not designed, maintained, or secured for production use.
 
-# Getting Started
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+# Transfer Management App
+A React Native application for managing transfer requests, built with TypeScript and Firebase Cloud Messaging.
 
-## Step 1: Start Metro
+## Tech Stack
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+- React Native (TypeScript)
+- Firebase Cloud Messaging
+- Node.js (backend)
+- Android (tested)
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Goal
+The goal of this application is to solve a real world problem I experience at work. Working on a multi-unit complex, managing the transfers across campus often requires text messages between directors and drivers. Having a unified portal for requesting a product, agreeing to transfer the product, monitor in-transit and delivered transfers, solves this problem.
 
-```sh
-# Using npm
-npm start
 
-# OR using Yarn
-yarn start
-```
+## Users
+Users register through the app. 
+-Bcrypt is used on the server side to encrypt password before storage.
+-Users are created with a "type" i.e drivers, operators
+-Users are created with a "unit number" that is used to channel notifications appropriately. 
 
-## Step 2: Build and run your app
+Users are currently stored in a database with the following fields:
+-username 
+-encrypted password,
+-fcmToken, 
+-unit number
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+## Transfers
+Transfers are currently stored in a database with the following fields:
+-requestingUser (record only)
+-type: enum: requested, accepted, in-transit,delivered
+-item
+-quantity requested
+-quantity sent
+-quanityt type requested i.e case, each, lb
+-quantity type sent
+-receiving unit (requesting)
+-sending unit 
+-date/time
 
-### Android
 
-```sh
-# Using npm
-npm run android
+## App Use Flow
+Assumptions: 
+-multiple users have app open/installed/background. 
+-At least 2 operators with different unit numbers 
+-At least 1 driver.
 
-# OR using Yarn
-yarn android
-```
+User1: unit num 1
+User2: unit num 2
 
-### iOS
+-User1 requests x product y quantity z type (Bananas, 4, case).
+    -*Notification is sent to all users in db
+    -**NOTIF"Unit Number 1 has requested Bananas"
+    -**Transfer is visible in operator screen in "Open Transfers"
+-User 2 sees the requested transfer in "Open Transfers" tab
+-User 2 accepts the transfer, with user2 inputting amount/type sent(Bananas, 2, case).
+    -*Notification is sent to all users in unit 1
+    -**NOTIF"Unit Number 2 has accepted your tranasfer of Banana(s)"
+    -**Transfer is visible in operator screen in "My Transfers" for both -unit 1 and unit 2, tagged as accepted
+    -**Transfer is visible in driver screen "Accepted Transfers" tab
+-Driver sees transfer in "Accepted Transfers" tab.
+-Driver picks up product, marks as "in-transit"
+    -*Notification is sent to all users in Unit 1
+    -**NOTIF"Your transfer request for Banana(s) is now in-transit"
+    -**Transfer is visible in transfer screen in "My Transfers" for both -unit 1 and unit 2, tagged as in-transit
+    -**Transfer is visible in driver screen in "in transit" tab
+-Driver sees transfer in "in-transit" tab, marks as "delivered"
+    -*Notification sent to all users in unit 1
+    -**NOTIF"Your transfer request for Banana(s) is now delivered"
+    -**Transfer is visible in transfer screen in "My Transfers" for both -unit 1 and unit 2, tagged as delievered
+    -**Transfer is visible in driver screen "recently delivered"
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+## Future
+The future of this project could be improved with:
+-User functionality:
+    -Password reset
+-Creating settings for a campus i.e organized unit numbers, admins
+-Weekly/Monthly reports
+-Price/Inventory database integration
 
-```sh
-bundle install
-```
 
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## Author
+See my github profile for more projects: [Dustin Bruce](github.com/dustinbruce50)
+Also check out my [portfolio site](dustinbruceresume.portfolio.app)
