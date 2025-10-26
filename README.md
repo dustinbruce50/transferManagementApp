@@ -73,7 +73,48 @@ User2: unit num 2
     - **NOTIF"Your transfer request for Banana(s) is now delivered"
     - **Transfer is visible in transfer screen in "My Transfers" for both -unit 1 and unit 2, tagged as delievered
     - **Transfer is visible in driver screen "recently delivered"
+## Server Operations
 
+The backend server for this project is built with **Node.js** and manages user authentication, transfer records, and push notification delivery. It uses MongoDB for data storage and exposes RESTful API endpoints for the mobile app.
+
+### Key Features
+
+- **User Authentication:**  
+  Handles registration and login, storing passwords securely with bcrypt hashing.
+
+- **Transfer Management:**  
+  Stores and updates transfer requests, including status changes (requested, accepted, in-transit, delivered), item details, and unit assignments.
+
+- **Push Notifications:**  
+  Integrates with Firebase Cloud Messaging to send real-time notifications to users based on transfer events.
+
+- **RESTful API:**  
+  Provides endpoints for user management, transfer operations, and notification handling.
+
+### Main Server Files
+
+- `server.js` — Main entry point for the Node.js server.
+- `models/User.js` — Mongoose schema for user data.
+- `models/Transfer.js` — Mongoose schema for transfer records.
+- `routes/users.js` — User registration and authentication routes.
+- `routes/transfers.js` — Transfer request and status update routes.
+- `routes/notifs.js` — Notification-related endpoints.
+- `routes/fcm.js` — Firebase Cloud Messaging integration.
+
+### Data Storage
+
+- Uses **MongoDB** (see `data/` directory) for persistent storage of users and transfers.
+- Stores FCM tokens for each user to enable targeted notifications.
+
+### Example API Endpoints
+
+- `POST /users/register` — Register a new user
+- `POST /users/login` — Authenticate a user
+- `POST /transfers` — Create a new transfer request
+- `PUT /transfers/:id` — Update transfer status
+- `POST /notifs/send` — Send a notification to a user or group
+
+---
 
 ## Future
 The future of this project could be improved with:
