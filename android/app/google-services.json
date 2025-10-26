@@ -1,0 +1,29 @@
+{
+	"project_info": {
+		"project_number": "752123681657",
+		"project_id": "projectmanagementappnotif",
+		"storage_bucket": "projectmanagementappnotif.firebasestorage.app"
+	},
+	"client": [
+		{
+			"client_info": {
+				"mobilesdk_app_id": "1:752123681657:android:bdc0b548a5f282114bada8",
+				"android_client_info": {
+					"package_name": "com.transfermanagementapp"
+				}
+			},
+			"oauth_client": [],
+			"api_key": [
+				{
+					"current_key": "AIzaSyAFIuaemv2SmB2Bw25PO9-MG7eptJXJT6o"
+				}
+			],
+			"services": {
+				"appinvite_service": {
+					"other_platform_oauth_client": []
+				}
+			}
+		}
+	],
+	"configuration_version": "1"
+}

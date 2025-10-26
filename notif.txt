@@ -1,0 +1,119 @@
+Firebase + React Native (FCM) setup and testing — compact checklist
+
+1) Install libraries
+npm install @react-native-firebase/app @react-native-firebase/messaging @notifee/react-native
+# iOS: npx pod-install
+
+2) Create Firebase project & Android app
+- In Firebase Console: create project -> Add Android app -> enter appId (package name).
+- Download google-services.json -> place in android/app/google-services.json
+
+3) Gradle changes
+- android/build.gradle: add google services classpath
+  buildscript {
+    dependencies {
+      classpath("com.google.gms:google-services:4.3.15")
+    }
+  }
+- android/app/build.gradle: apply plugin and use BOM
+  apply plugin: 'com.google.gms.google-services'
+  dependencies {
+    implementation platform('com.google.firebase:firebase-bom:32.2.0')
+  }
+
+4) AndroidManifest
+- Ensure internet permission:
+  <uses-permission android:name="android.permission.INTERNET"/>
+
+5) Place google-services.json
+- Copy to android/app/google-services.json
+
+6) Native setup notes
+- Follow @react-native-firebase docs for any additional Android config (MultiDex, ProGuard, etc.)
+
+7) App code — init, foreground and background handling
+
+// src/notifications.js
+import messaging from '@react-native-firebase/messaging';
+import notifee, { AndroidImportance } from '@notifee/react-native';
+
+export async function initNotifications() {
+  const authStatus = await messaging().requestPermission();
+  const enabled = authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+                  authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+  if (!enabled) return null;
+
+  const token = await messaging().getToken();
+  console.log('FCM token:', token);
+
+  await notifee.createChannel({
+    id: 'default',
+    name: 'Default',
+    importance: AndroidImportance.HIGH,
+  });
+
+  messaging().onMessage(async remoteMessage => {
+    await notifee.displayNotification({
+      title: remoteMessage.notification?.title ?? 'Message',
+      body: remoteMessage.notification?.body ?? JSON.stringify(remoteMessage.data ?? {}),
+      android: { channelId: 'default' },
+    });
+  });
+
+  return token;
+}
+
+8) Background handler (top-level)
+
+// index.js
+import { AppRegistry } from 'react-native';
+import App from './App';
+import messaging from '@react-native-firebase/messaging';
+import notifee from '@notifee/react-native';
+
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  await notifee.displayNotification({
+    title: remoteMessage.notification?.title ?? 'BG',
+    body: remoteMessage.notification?.body ?? JSON.stringify(remoteMessage.data ?? {}),
+    android: { channelId: 'default' },
+  });
+});
+
+AppRegistry.registerComponent('YourAppName', () => App);
+
+9) Run app on device/emulator
+- Use Google Play system image emulator or a real device for FCM.
+- Start app and copy token printed by initNotifications.
+
+10) Test with curl (legacy server key)
+curl -X POST -H "Authorization: key=SERVER_KEY" -H "Content-Type: application/json" \
+ -d '{
+   "to":"DEVICE_FCM_TOKEN",
+   "notification":{"title":"Test","body":"Hello from curl"},
+   "data":{"foo":"bar"}
+ }' https://fcm.googleapis.com/fcm/send
+
+11) Test with FCM HTTP v1 (recommended)
+- Create service account JSON in Firebase console.
+ACCESS_TOKEN=$(gcloud auth application-default print-access-token)
+curl -X POST -H "Authorization: Bearer $ACCESS_TOKEN" -H "Content-Type: application/json; charset=utf-8" \
+ -d '{
+   "message": {
+     "token":"DEVICE_FCM_TOKEN",
+     "notification":{"title":"v1 test","body":"hello"},
+     "data":{"foo":"bar"}
+   }
+ }' "https://fcm.googleapis.com/v1/projects/PROJECT_ID/messages:send"
+
+12) Debugging tips
+- Verify token printed by app.
+- Use adb logcat to view delivery: adb logcat | grep Firebase
+- Foreground: display a local notification in onMessage.
+- Ensure google-services.json location and Gradle edits are correct.
+
+iOS notes (brief)
+- Add GoogleService-Info.plist to Xcode target.
+- Use APNs key in Firebase console.
+- Test on physical device for APNs.
+
+End of file.
