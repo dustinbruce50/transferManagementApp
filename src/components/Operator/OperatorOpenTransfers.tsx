@@ -12,13 +12,23 @@ import {
 	TextInput,
 	View,
 	KeyboardAvoidingView,
+	TouchableOpacity,
+	Touchable,
+	Pressable,
 } from 'react-native';
 import RNModal from 'react-native-modal';
 import { Transfer } from '../types';
 import TransferCard from '../TransferCard';
-import { Picker } from '@react-native-picker/picker';
 import { useFocusEffect } from '@react-navigation/native';
 import { SERVER_IP } from '@env';
+import { RawButton } from 'react-native-gesture-handler';
+import { Modal } from 'react-native';
+
+const COUNT_TYPES = [
+    { label: 'Ea', value: 'EA' },
+    { label: 'CS', value: 'CS' },
+    { label: 'LB', value: 'LB' },
+];
 
 const OperatorOpenTransfers = () => {
 	const [transfers, setTransfers] = useState<Transfer[]>(
@@ -32,6 +42,8 @@ const OperatorOpenTransfers = () => {
 	const [modalVisible, setModalVisible] =
 		useState<boolean>(false);
 	const isMounted = useRef<boolean>(true);
+	const shouldFetchRef = useRef<boolean>(false);
+	const [showPicker, setShowPicker] = useState(false);
 
 	useEffect(() => {
 		isMounted.current = true;
@@ -51,14 +63,18 @@ const OperatorOpenTransfers = () => {
 	);
 
 	const openModal = (transfer: Transfer) => {
+		console.log('Opening modal for transfer:', transfer);
 		setSelectedTransfer(transfer);
 		setAmountSent(transfer.amountReq?.toString() || '0'); // Use requested amount as default
 		setCountTypeSent(transfer.amountReqType || 'EA'); // Use requested type as default
 		setModalVisible(true);
+		console.log('Modal visible:', modalVisible);
 	};
 	const closeModal = () => {
 		setModalVisible(false);
+
 	};
+	
 
 	useFocusEffect(
 		React.useCallback(() => {
@@ -122,11 +138,13 @@ const OperatorOpenTransfers = () => {
 			console.warn('crash test 1');
 
 			console.warn('🟢 CRASH TEST 3');
-			//await fetchTransfers();
+			shouldFetchRef.current = true;
 			closeModal();
+			
 
 			console.warn('crash test 2');
 			console.warn('crash test 3');
+
 		} catch (error) {
 			console.log(error);
 			Alert.alert('Error Accepting Transfer');
@@ -151,17 +169,21 @@ const OperatorOpenTransfers = () => {
 				//avoidKeyboard={true}
 				hasBackdrop={true}
 				backdropColor="black"
-				backdropOpacity={0.7}
+				backdropOpacity={0.2}
 				backdropTransitionInTiming={1000}
 				backdropTransitionOutTiming={1000}
 				onBackButtonPress={closeModal}
-				onModalHide={fetchTransfers}
+				onModalHide={() => {
+					if(shouldFetchRef.current){
+						shouldFetchRef.current = false;
+						fetchTransfers();
+					}
+				}}
 			>
 				<View style={styles.modalContent}>
 					<View style={styles.modalContent2}>
-						<Text style={styles.modalHeader}>
-							Accept Transfer
-						</Text>
+						
+		
 						<TextInput
 							style={styles.input2}
 							placeholder="Amount Sent"
@@ -170,29 +192,48 @@ const OperatorOpenTransfers = () => {
 							onChangeText={setAmountSent}
 							inputMode="numeric"
 						/>
-						<Picker
-							//style={styles.picker}
-							selectedValue={countTypeSent}
-							onValueChange={setCountTypeSent}
-							prompt="Select type"
+						<Pressable
+							style={styles.input2}
+							onPress={() => setShowPicker(true)}
+							//value={countTypeSent}
+							onFocus={() => setShowPicker(true)}
 						>
-							<Picker.Item
-								label="Ea"
-								value="EA"
-							/>
-							<Picker.Item
-								label="CS"
-								value="CS"
-							/>
-							<Picker.Item
-								label="Lb"
-								value="LB"
-							/>
-						</Picker>
-						<Button
-							title="Accept"
-							onPress={onAccept}
-						/>
+							<Text style={{ textAlign: 'center' }}>
+								{countTypeSent
+									? COUNT_TYPES.find(
+											(type) =>
+												type.value === countTypeSent,
+									  )?.label
+									: 'Select Count Type'}
+							</Text>
+							</Pressable>
+						{showPicker && (
+							<View style={{ backgroundColor: 'white', padding: 10, borderRadius: 5 }}>
+								{COUNT_TYPES.map((type) => (
+									<Pressable
+										key={type.value}
+										onPress={() => {
+											setCountTypeSent(type.value);
+											setShowPicker(false);
+										}}
+										style={{ padding: 10 }}
+									>
+										<Text>{type.label}</Text>
+									</Pressable>
+								))}
+							</View>
+						)}
+						<Button title="Accept Transfer" onPress={onAccept} />
+							
+								
+					
+
+
+					
+				
+					
+		
+							 
 					</View>
 				</View>
 			</RNModal>

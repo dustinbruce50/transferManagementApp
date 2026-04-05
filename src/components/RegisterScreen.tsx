@@ -14,7 +14,7 @@ import { StyleSheet } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RegisterScreenNavigationProp } from './types';
-import { Picker } from '@react-native-picker/picker';
+
 import { SERVER_IP } from '@env';
 
 type Props = {
@@ -76,23 +76,7 @@ const RegisterScreen = ({ navigation }: Props) => {
 				<KeyboardAvoidingView behavior="height">
 					<View style={styles.form}>
 						<Text style={styles.title}>Register</Text>
-						<Picker
-							selectedValue={userType}
-							onValueChange={(itemValue, itemIndex) =>
-								setUserType(itemValue)
-							}
-							mode="dropdown"
-							style={{ width: 200 }}
-						>
-							<Picker.Item
-								label="Operator"
-								value="operator"
-							/>
-							<Picker.Item
-								label="Driver"
-								value="driver"
-							/>
-						</Picker>
+						
 						<TextInput
 							style={styles.input}
 							placeholder="Username"

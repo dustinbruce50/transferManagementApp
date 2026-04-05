@@ -22,7 +22,6 @@ import {
 import RNModal from 'react-native-modal';
 import { Transfer } from '../types';
 import TransferCard from '../TransferCard';
-import { Picker } from '@react-native-picker/picker';
 import { useFocusEffect } from '@react-navigation/native';
 import { SERVER_IP } from '@env';
 import {
@@ -70,7 +69,7 @@ const OperatorMyTransfers = () => {
 
 	const renderItem = ({ item }: { item: Transfer }) => {
 		let cancellable = false;
-		let pinColor = 'white';
+		let pinColor = 'pink';
 		let message = '';
 		if (item.type === 'requested') {
 			pinColor = '#FF5252';
@@ -81,6 +80,10 @@ const OperatorMyTransfers = () => {
 		} else if (item.type === 'delivered') {
 			pinColor = '#4CAF50';
 			message = 'Delivered';
+		}
+		else if (item.type === 'in-transit') {
+			pinColor = '#2196F3';
+			message = 'In Transit';
 		}
 		if (
 			item.type === 'requested' &&

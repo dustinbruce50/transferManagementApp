@@ -36,7 +36,7 @@ Transfers are currently stored in a database with the following fields:
 -item
 -quantity requested
 -quantity sent
--quanityt type requested i.e case, each, lb
+-quantity type requested i.e case, each, lb
 -quantity type sent
 -receiving unit (requesting)
 -sending unit 
@@ -59,7 +59,7 @@ User2: unit num 2
 -User 2 sees the requested transfer in "Open Transfers" tab
 -User 2 accepts the transfer, with user2 inputting amount/type sent(Bananas, 2, case).
     -*Notification is sent to all users in unit 1
-    -**NOTIF"Unit Number 2 has accepted your tranasfer of Banana(s)"
+    -**NOTIF"Unit Number 2 has accepted your transfer of Banana(s)"
     -**Transfer is visible in operator screen in "My Transfers" for both -unit 1 and unit 2, tagged as accepted
     -**Transfer is visible in driver screen "Accepted Transfers" tab
 -Driver sees transfer in "Accepted Transfers" tab.
@@ -71,7 +71,7 @@ User2: unit num 2
 -Driver sees transfer in "in-transit" tab, marks as "delivered"
     -*Notification sent to all users in unit 1
     -**NOTIF"Your transfer request for Banana(s) is now delivered"
-    -**Transfer is visible in transfer screen in "My Transfers" for both -unit 1 and unit 2, tagged as delievered
+    -**Transfer is visible in transfer screen in "My Transfers" for both -unit 1 and unit 2, tagged as delivered
     -**Transfer is visible in driver screen "recently delivered"
 
 

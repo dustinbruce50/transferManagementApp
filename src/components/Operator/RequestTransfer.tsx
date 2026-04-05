@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Picker } from '@react-native-picker/picker';
+//import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import React, { useState } from 'react';
 import {
@@ -9,14 +9,23 @@ import {
 	Text,
 	TextInput,
 	View,
+	TouchableOpacity,
+	Pressable
 } from 'react-native';
 import { Transfer } from '../types';
 import { SERVER_IP } from '@env';
+
+const COUNT_TYPES = [
+    { label: 'Ea', value: 'EA' },
+    { label: 'CS', value: 'CS' },
+    { label: 'LB', value: 'LB' },
+];
 
 const RequestTransfer = () => {
 	const [item, setItem] = useState('');
 	const [amountReq, setAmountReq] = useState('');
 	const [amountReqType, setAmountReqType] = useState('EA');
+	const [pickVisible, setPickVisible] = useState(false);
 
 	const handleSubmit = async () => {
 		try {
@@ -27,7 +36,7 @@ const RequestTransfer = () => {
 				{
 					item,
 					amountReq,
-					amountReqType,
+					amountReqType: amountReqType || 'EA',
 					unitNum,
 				},
 				{
@@ -36,7 +45,11 @@ const RequestTransfer = () => {
 					},
 				},
 			);
-			Alert.alert('Transfer Requested');
+			console.log('before alert')
+			
+			Alert.alert('Transfer Requested')
+			
+			console.log('after alert')
 		} catch (error) {
 			console.log(error);
 			Alert.alert('Error Requesting Transfer');
@@ -47,39 +60,44 @@ const RequestTransfer = () => {
 		<View>
 			<TextInput
 				style={styles.input}
-				placeholder="We need..."
+				placeholder="Item Requested"
 				value={item}
 				onChangeText={setItem}
 			/>
 			<TextInput
 				style={styles.input}
-				placeholder="We need how many..."
+				placeholder="Number of Units"
 				value={amountReq}
 				onChangeText={setAmountReq}
 				keyboardType="numeric"
 			/>
-			<Picker
-				mode="dropdown"
-				selectedValue={amountReqType}
-				onValueChange={itemValue =>
-					setAmountReqType(itemValue)
+			<TouchableOpacity
+			style={{ marginTop: 20, padding: 10, backgroundColor: '#eee', borderRadius: 5, bottom: 10 }}>
+				<Pressable
+					onPress={() =>
+						setPickVisible(!pickVisible)
+					}
+				>
+					<Text>{amountReqType}</Text>
+				</Pressable>
+				 {pickVisible && 
+					<View style={{ backgroundColor: 'white', padding: 10, borderRadius: 5, width: '20%', left: 0, top: 10, zIndex: 1 }}>
+						{COUNT_TYPES.map((type) => (
+							<Pressable
+							style={{ padding: 5, borderColor: 'black', borderWidth: 1, marginBottom: 5 }}
+								key={type.value}
+								onPress={() => {
+									setAmountReqType(type.value);
+									setPickVisible(false);
+								}}
+							>
+								<Text>{type.label}</Text>
+							</Pressable>
+						))}	
+					</View>
 				}
-				style={{ height: 50, width: 90 }}
-				prompt="CS/Ea..."
-			>
-				<Picker.Item
-					label="Ea"
-					value="ea"
-				/>
-				<Picker.Item
-					label="CS"
-					value="cs"
-				/>
-				<Picker.Item
-					label="LB"
-					value="lb"
-				/>
-			</Picker>
+				
+			</TouchableOpacity>
 
 			<Button
 				title="Request Transfer"
